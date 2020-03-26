@@ -39,3 +39,5 @@ def classify0(inX, dataSet, labels, k):
                               reverse=True
                               )
     return sortedClassCount[0][0]
+
+group,labels = createDataSet()
