@@ -11,6 +11,10 @@ public class BinarySearch {
         int[] leftNums = {1, 2, 3, 3, 3, 4};
         int leftTarget = 5;
         System.out.println(binarySearch.leftBoundSearch(leftNums, leftTarget));
+        // right bound search test
+        int[] rightNums = {1, 2, 3, 4, 5, 5};
+        int rightTarget = 0;
+        System.out.println(binarySearch.rightBoundSearch(rightNums, rightTarget));
     }
 
     /**
@@ -45,7 +49,7 @@ public class BinarySearch {
     }
 
     /**
-     * left bound search
+     * left bound search function
      */
     int leftBoundSearch(int[] nums, int target) {
         System.out.println("start left bound search");
@@ -70,5 +74,34 @@ public class BinarySearch {
         if (left == 0 || left >= nums.length)
             left = -1;
         return left;
+    }
+
+    /**
+     * right bound search function
+     */
+    int rightBoundSearch(int[] nums, int target) {
+        System.out.println("start right bound search");
+        // invalid dealing
+        if (nums == null || nums.length == 0) 
+            return -1;
+
+        // search in range (left, right]
+        int left = 0;
+        int right = nums.length;
+
+        // jump out while left == right
+        while (left < right) {
+            int mid = (left + right) / 2;
+            if (nums[mid] == target) 
+                left = mid + 1;
+            else if (nums[mid] > target)
+                right = mid;
+            else if (nums[mid] < target)
+                left = mid + 1;
+        }
+        // beacuse left = mid + 1, so result is 1 more than the acutal value
+        int res = right - 1;
+        if (res < 0) return -1;
+        return nums[res] == target ? res:-1;
     }
 }
