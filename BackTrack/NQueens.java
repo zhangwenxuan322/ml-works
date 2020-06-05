@@ -20,7 +20,11 @@ public class NQueens {
             }
             board.add(stringBuffer.toString());
         }
+
+        // * keypoint: backtrack
         nQueens.backtrack(board, 0);
+
+        // print result
         for (List<String> line : nQueens.result) {
             System.out.println("[");
             for (String string : line) {
@@ -43,14 +47,19 @@ public class NQueens {
             result.add(new LinkedList<>(board));
             return;
         }
+        // get col length
         int n = board.get(row).length();
         for (int col = 0; col < n; col++) {
+            // deal validation of queen location
             if (!isValid(board, row, col))
                 continue;
+            // replace . with Q
             StringBuffer stringBuffer = new StringBuffer(board.get(row));
             stringBuffer.setCharAt(col, 'Q');;
             board.set(row, stringBuffer.toString());
+            // next backtrack
             backtrack(board, row + 1);
+            // replace Q with .
             StringBuffer stringBuffer2 = new StringBuffer(board.get(row));
             stringBuffer2.setCharAt(col, '.');;
             board.set(row, stringBuffer2.toString());
@@ -62,7 +71,7 @@ public class NQueens {
      */
     boolean isValid(LinkedList<String> board, int row, int col) {
         int n = board.size();
-        // check col
+        // check same col
         for (int i = 0; i < n; i++) {
             String line = board.get(i);
             char target = line.charAt(col);
