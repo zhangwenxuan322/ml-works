@@ -105,7 +105,7 @@
 
   **Savepoint**：可以理解为手动产生的一个Checkpoint，便于Flink的版本升级或者计算逻辑的修改
 
-## DataStream API
+## DataStream
 
 ### Basic Model
 
@@ -142,3 +142,32 @@ dataStream.recale() -> 本地轮流分配
 dataStream.partitionCustom() -> 自定义单播
 ```
 
+## Window
+
+### Tumbling Window
+
+- 窗口间的元素无重叠
+
+### Sliding Window
+
+- 窗口会滑动
+
+### Session Window
+
+- 自定义窗口，可以设定间隔时间来切分窗口
+
+### Global Window
+
+- 全部属于一个窗口
+
+### Watermark
+
+- 有一些数据会迟到
+- watermark可以人为的设置一些滞后数据最后到达时间
+
+## State
+
+### Managed State & Raw State
+
+- Managed State：Flink Runtime管理，支持的数据结构包括：value、list、map......，大多数情况下可用
+- Raw State：用户自己管理，数据结构为字节数组byte[]，自定义算子时可用
