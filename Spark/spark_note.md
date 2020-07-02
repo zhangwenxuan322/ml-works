@@ -43,3 +43,58 @@ object MyOracleDialect {
 
 ```
 
+### column切分字符串
+
+当要把一个字段切分成多个字段，例如`content->a:123@@b:234@@c:345`，对dataframe的操作可以如下：
+
+```scala
+val resData = sourceData.select($"*").
+      withColumn("content_tmp", split($"content", "@@")).
+      select(
+        $"*" +:
+        (0 until 3).
+          map(
+            i => $"content_tmp".getItem(i)
+            .substr(lit(3), length($"content_tmp".getItem(i)) - 2).as(s"C${i+1}")
+          ):_*
+      )
+```
+
+### 执行shell命令
+
+```scala
+import sys.process._
+"command".!!
+```
+
+### Dataframe写入csv
+
+1. 分区方式
+
+   ```scala
+   // 分块文件会存在hdfs中
+   nodes.repartition(16)
+   			.write
+   			.option("header", "true")
+   			.option("sep", "|")
+       	.mode("overwrite")
+       	.csv("/tmp/vertexes")
+   ```
+
+2. 单机写入一个文件
+
+   ```scala
+   import java.io.{File, PrintWriter}
+   val csv = new PrintWriter(
+   		new File("/tmp/test.csv")
+   )
+   csv.write("uuid:ID(shebei)|oid|txid|sbmc|sbzlx|sstsl|modelalias|documentname|c1|c2|c3" + "\n")
+   // 先collect确保在主节点上操作
+   df.collect.map(_.mkString("|")).foreach(line => {
+     csv.write(line + "\n")
+   })
+   csv.close()
+   ```
+
+   
+
