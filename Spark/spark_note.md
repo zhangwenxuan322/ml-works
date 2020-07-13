@@ -96,5 +96,82 @@ import sys.process._
    csv.close()
    ```
 
+
+### 对Dataframe某个字段进行分组计算操作
+
+1. 对DF分组后根据字段`groupby`
+
+   ```scala
+   target.repartition(16) // 可以是自定义分区数也可以根据字段分区
+         .groupByKey(r => r.getAs[String]("xxx")) // 根据字段groupby
+         .mapGroups(
+           (xxx, row) => {
+             // row就是当前字段下的数据集
+             // 可以转成单节点操作的数据结构进行计算
+             val seq = row.toSeq
+             // 需要返回一个结果
+             res
+           }
+         )
+   ```
+
+2. 不用担心`groupby`前的分区会将数据集打乱，spark内部会自己操作
+
+3. 结果集提取操作：
+
+   在`mapGroups`后得到的是一个`Dataset[T]`，内部的泛型是根据结果集类型得出的，比如`Dataset[Seq[String]]`这样的类型，需要对DS解析转成DF
+
+   ```scala
+   resData.repartition(16)
+   			 .mapPartitions(seq => {
+            val s = mutable.ArrayBuffer[String]()
+            seq.foreach(str => {
+              s += str
+            })
+            s.toIterator
+          }).toDF()
+   ```
+
+4. 注意事项：
+
+   1) 在分组计算时不可以用DF这样分布式的数据存储结构，因为这些计算要在单机上执行
+
+   2) 每个组别都需要用的数据可以在一开始广播出去，广播方法：`spark.sparkContext.broadcast()`，接收方法：`broadcast.value`获取数据
+
+### 数据集持久化
+
+1. 在进行DF操作的时候，我们需要在接下来多个行动中重用同一个DF，这个时候我们就可以将DF缓存起来，可以很大程度的节省计算和程序运行时间
+
+2. 持久化有两种方法：`cache()`和`persist()`，如果`persist()`不传参的情况下与`cache()`等效，存储级别都是`MEMORY_AND_DISK`，源码如下：
+
+   ```scala
+   /**
+      * Persist this Dataset with the default storage level (`MEMORY_AND_DISK`).
+      *
+      * @group basic
+      * @since 1.6.0
+      */
+     def cache(): this.type = persist()
+   ```
+
+3. `persist(StorageLevel)`传参方式可以自行选择存储级别，有如下几种级别：
+
+   ```scala
+   val NONE = new StorageLevel(false, false, false, false)
+   val DISK_ONLY = new StorageLevel(true, false, false, false)
+   val DISK_ONLY_2 = new StorageLevel(true, false, false, false, 2)
+   val MEMORY_ONLY = new StorageLevel(false, true, false, true)
+   val MEMORY_ONLY_2 = new StorageLevel(false, true, false, true, 2)
+   val MEMORY_ONLY_SER = new StorageLevel(false, true, false, false)
+   val MEMORY_ONLY_SER_2 = new StorageLevel(false, true, false, false, 2)
+   val MEMORY_AND_DISK = new StorageLevel(true, true, false, true)
+   val MEMORY_AND_DISK_2 = new StorageLevel(true, true, false, true, 2)
+   val MEMORY_AND_DISK_SER = new StorageLevel(true, true, false, false)
+   val MEMORY_AND_DISK_SER_2 = new StorageLevel(true, true, false, false, 2)
+   val OFF_HEAP = new StorageLevel(true, true, true, false, 1)
+   ```
+
+   
+
    
 
