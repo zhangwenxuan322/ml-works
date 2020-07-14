@@ -171,3 +171,21 @@ dataStream.partitionCustom() -> 自定义单播
 
 - Managed State：Flink Runtime管理，支持的数据结构包括：value、list、map......，大多数情况下可用
 - Raw State：用户自己管理，数据结构为字节数组byte[]，自定义算子时可用
+
+## Table API
+
+SQL API的超集，并且能优化查询语句
+
+- withColumns()
+
+  可以选择想要的字段范围，范围类型可以是下标的数字或者名字，如：`withColumns(2 to 10, w to z)`
+
+- 各种关系所用到的算子
+
+  |          | 单行输入                           | 多行输入                              |
+  | -------- | ---------------------------------- | ------------------------------------- |
+  | 单行输出 | ScalarFunction(select/map)         | AggregateFunction(select/aggregate)   |
+  | 多行输出 | TableFunction(joinLateral/flatmap) | TableAggregateFunction(flatAggregate) |
+
+  
+
