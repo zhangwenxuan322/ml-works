@@ -171,7 +171,7 @@ import sys.process._
    val OFF_HEAP = new StorageLevel(true, true, true, false, 1)
    ```
 
-   
 
-   
+### 大量数据导入Oracle
 
+在工作中经常遇到Oracle整张表的数据导入的情况，而通过SQL脚本的方式写入十分笨重且缓慢。更为高效的方式是导入dmp文件：首先将获取到的.dmp结尾的文件放到oracle目录下，然后去oracle的console里执行语句`imp db/db file=table.dmp log=table.log statistics=none full=y`，几百上千万的表也能很快导入成功。
