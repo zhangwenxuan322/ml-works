@@ -171,8 +171,7 @@ import sys.process._
    val OFF_HEAP = new StorageLevel(true, true, true, false, 1)
    ```
 
-
-### 大量数据导入Oracle
+### dmp文件导入oracle
 
 在工作中经常遇到Oracle整张表的数据导入的情况，而通过SQL脚本的方式写入十分笨重且缓慢，而使用dmp文件的方式写入更加高效。具体步骤如下：
 
@@ -186,3 +185,15 @@ chown oracle:dba xxx.dump
 imp db/db file=table.dmp log=table.log statistics=none full=y
 ```
 
+### 诡异的`ClassNotFound: scala.Any`
+
+在一次RDD转DataFrame的经历中，遇到了这样的问题，想了一天都没解决，无意中发现问题，以下是代码复现：
+
+```scala
+rdd.map(m => {
+  // ......忽略逻辑代码
+  (t1, t2, t3, t4, t5)
+}).toDF("t1", "t2", "t3", "t4", "t5")
+```
+
+如此简单的转换过程为什么会出错呢，而且报的错也让人摸不着头脑，在对代码再三审核之后发现，返回值内包含了Double和String类型，而RDD转DataFrame的过程要求字段类型一致，所以解决方案也就很显然了，将全部类型转换成String。
