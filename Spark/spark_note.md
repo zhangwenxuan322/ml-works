@@ -177,7 +177,7 @@ import sys.process._
 
 1. 修改权限
 ```
-chown oracle:dba xxx.dump
+chown oracle:dba xxx.dmp
 ```
 2. 切换到oracle 用户
 3. 输入导入命令
