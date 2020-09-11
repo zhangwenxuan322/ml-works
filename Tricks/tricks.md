@@ -80,3 +80,19 @@
   4. auto-pairs：`Plug 'jiangmiao/auto-pairs'`自动补齐括号
   5. nerdcommenter：`Plug 'preservim/nerdcommenter'`快捷注释，`\cc`注释，`\cu`反注释，前面可以加行数，默认是一行
 
+### 删除macOS文件的隔离标签
+
+1. 先给所有文件写权限，因为有些文件没有该权限：
+
+   ```
+   $ cd instantclient_19_3
+   $ sudo chmod u+w *
+   ```
+
+2. 删除`com.apple.quarantine`标签：
+
+   ```
+   $ cd ..
+   $ xattr -r -d -s com.apple.quarantine instantclient_19_3
+   ```
+
