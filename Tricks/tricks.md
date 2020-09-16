@@ -96,3 +96,8 @@
    $ xattr -r -d -s com.apple.quarantine instantclient_19_3
    ```
 
+### Vim多窗口操作
+
+1. `:o file`可以打开指定文件，但会占据整个屏幕
+2. `:tabedit file`可以开启Vim多窗口，`gt`向前移动一个小窗口，`gT`向后移动一个小窗口，`5gt`指定窗口位置移动
+3. `vim -p file1 file2 file3`可以直接开启多窗口
